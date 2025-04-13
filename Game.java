@@ -9,14 +9,14 @@ public class Game {
     private final List<String> playerNames;
     private final Map<String, Integer> totalScores;
 
-    // Replay log: Map<RoundNumber, List of PlayerAction>
-    private final Map<Integer, List<PlayerAction>> replayLog;
+    private final Map<Integer, List<PlayerAction>> replayLog; // reacording actions of players for replay
 
+    // Constructor to start the game
     public Game(int rounds, int numPlayers, int numComputers) {
         this.rounds = rounds;
         this.numPlayers = numPlayers;
         this.numComputers = numComputers;
-        this.deck = new Deck();
+        this.deck = new Deck(); // new deck
         this.playerNames = new ArrayList<>();
         this.totalScores = new HashMap<>();
         this.replayLog = new HashMap<>();
@@ -26,7 +26,7 @@ public class Game {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to 15from3!\n");
 
-        // Get player names
+        // Add human players
         for (int i = 1; i <= numPlayers; i++) {
             System.out.print("Enter name for Player " + i + ": ");
             String name = scanner.nextLine();
@@ -34,7 +34,7 @@ public class Game {
             totalScores.put(name, 0);
         }
 
-        // Add computer players
+        // Add computers
         for (int i = 1; i <= numComputers; i++) {
             String name = "Computer" + i;
             playerNames.add(name);
@@ -48,10 +48,11 @@ public class Game {
 
             List<PlayerAction> roundActions = new ArrayList<>();
 
+            // Players take turns
             for (String name : playerNames) {
                 System.out.println("\n" + name + "'s turn:");
                 LinkedList<Card> dealt = deck.deal(5);
-                LinkedList<Card> initialHandCopy = new LinkedList<>(dealt); // Save original hand
+                LinkedList<Card> initialHandCopy = new LinkedList<>(dealt);
                 boolean isComputer = name.startsWith("Computer");
                 Hand hand = new Hand(dealt, isComputer);
 
@@ -84,6 +85,7 @@ public class Game {
                 System.out.println("Score: " + score);
                 totalScores.put(name, totalScores.get(name) + score);
 
+                // Save actions for replay later
                 roundActions.add(new PlayerAction(name, initialHandCopy, removedCards,
                         new LinkedList<>(hand.getCards()), score));
             }
@@ -91,7 +93,7 @@ public class Game {
             replayLog.put(round, roundActions);
         }
 
-        // Final scores
+        // Show final scores
         System.out.println("\n=== Final Scores ===");
         playerNames.sort(Comparator.comparingInt(totalScores::get));
         for (String name : playerNames) {
@@ -100,8 +102,8 @@ public class Game {
 
         updateHighScores();
 
-        // Offer replay
-        scanner.nextLine(); // consume leftover newline
+        // Ask for replay
+        scanner.nextLine();
         System.out.print("\nWould you like to view the replay? (yes/no): ");
         String replayChoice = scanner.nextLine().trim();
         if (replayChoice.equalsIgnoreCase("yes")) {
@@ -110,6 +112,7 @@ public class Game {
 
     }
 
+    // Update high scores to a file
     private void updateHighScores() {
         try {
             File file = new File("highscores.txt");
@@ -122,6 +125,7 @@ public class Game {
                 reader.close();
             }
 
+            // Add new scores
             for (String name : playerNames) {
                 allScores.add(totalScores.get(name) + " - " + name);
             }
@@ -129,6 +133,7 @@ public class Game {
             allScores.sort(Comparator.comparingInt(s -> Integer.parseInt(s.split(" - ")[0])));
             List<String> top5 = allScores.subList(0, Math.min(5, allScores.size()));
 
+            // Write to file
             FileWriter writer = new FileWriter(file);
             for (String s : top5) {
                 writer.write(s + "\n");
@@ -144,6 +149,7 @@ public class Game {
         }
     }
 
+    // Show the replay of the game
     private void viewReplay() {
         System.out.println("\n=== Game Replay ===");
         for (int round : replayLog.keySet()) {
@@ -161,7 +167,7 @@ public class Game {
         }
     }
 
-    // Helper class to record each player's round activity
+    // Class to store actions in each round
     private static class PlayerAction {
         String name;
         LinkedList<Card> initialHand;
@@ -169,6 +175,7 @@ public class Game {
         LinkedList<Card> finalHand;
         int score;
 
+        // Constructor to save the actions
         public PlayerAction(String name, LinkedList<Card> initialHand, List<Card> removedCards,
                 LinkedList<Card> finalHand, int score) {
             this.name = name;
@@ -178,6 +185,7 @@ public class Game {
             this.score = score;
         }
 
+        // Display cards
         public void displayHand(List<Card> hand) {
             if (hand.isEmpty()) {
                 System.out.println("(none)");
