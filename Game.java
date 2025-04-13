@@ -1,6 +1,9 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Game {
     private final List<Player> players;
@@ -65,26 +68,35 @@ public class Game {
     }
 
     private void removeCards(Player player) {
-        System.out.println(
-                player.getName() + ", enter the numbers (1-5) of at least two cards to remove (e.g., 1 3 5): ");
-        String input = scanner.nextLine();
-        String[] indices = input.trim().split("\\s+");
+        List<Integer> toRemove;
+        if (player.getName().equalsIgnoreCase("Computer")) {
+            // Computer player: Choose optimal cards to remove
+            toRemove = computeOptimalCardsToRemove(player.getHand());
+            System.out.println(player.getName() + " removes cards: " +
+                    toRemove.stream().map(i -> String.valueOf(i + 1)).collect(Collectors.joining(" ")));
+        } else {
+            // Human player: Prompt for input
+            System.out.println(
+                    player.getName() + ", enter the numbers (1-5) of at least two cards to remove (e.g., 1 3 5): ");
+            String input = scanner.nextLine();
+            String[] indices = input.trim().split("\\s+");
 
-        List<Integer> toRemove = new ArrayList<>();
-        for (String s : indices) {
-            try {
-                int index = Integer.parseInt(s) - 1; // Convert to 0-based index
-                if (index >= 0 && index < player.getHand().size()) {
-                    toRemove.add(index);
+            toRemove = new ArrayList<>();
+            for (String s : indices) {
+                try {
+                    int index = Integer.parseInt(s) - 1; // Convert to 0-based index
+                    if (index >= 0 && index < player.getHand().size()) {
+                        toRemove.add(index);
+                    }
+                } catch (NumberFormatException ignored) {
                 }
-            } catch (NumberFormatException ignored) {
             }
-        }
 
-        if (toRemove.size() < 2) {
-            System.out.println("You must remove at least two cards. Try again.");
-            removeCards(player);
-            return;
+            if (toRemove.size() < 2) {
+                System.out.println("You must remove at least two cards. Try again.");
+                removeCards(player);
+                return;
+            }
         }
 
         // Sort in reverse order to avoid index shifting
@@ -92,6 +104,65 @@ public class Game {
         for (int index : toRemove) {
             player.getHand().removeCard(index);
         }
+    }
+
+    private List<Integer> computeOptimalCardsToRemove(Hand hand) {
+        List<Card> cards = hand.getCards();
+        int n = cards.size(); // Should be 5
+        List<Integer> bestIndicesToRemove = new ArrayList<>();
+        int bestScore = Integer.MAX_VALUE;
+
+        // Try all combinations of keeping 3 cards (removing 2)
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    // Simulate keeping cards i, j, k
+                    Hand tempHand = new Hand();
+                    tempHand.addCard(cards.get(i));
+                    tempHand.addCard(cards.get(j));
+                    tempHand.addCard(cards.get(k));
+
+                    int score = tempHand.calculateScore();
+                    if (score < bestScore) {
+                        bestScore = score;
+                        bestIndicesToRemove.clear();
+                        // Add indices to remove (all except i, j, k)
+                        for (int m = 0; m < n; m++) {
+                            if (m != i && m != j && m != k) {
+                                bestIndicesToRemove.add(m);
+                            }
+                        }
+                    } else if (score == bestScore) {
+                        // Tiebreaker: Prefer same-suit or same-color for bonuses
+                        String firstSuit = tempHand.getCards().get(0).getSuit();
+                        boolean sameSuit = tempHand.getCards().stream()
+                                .allMatch(card -> card.getSuit().equals(firstSuit));
+                        if (sameSuit) {
+                            bestIndicesToRemove.clear();
+                            for (int m = 0; m < n; m++) {
+                                if (m != i && m != j && m != k) {
+                                    bestIndicesToRemove.add(m);
+                                }
+                            }
+                        } else {
+                            String firstColor = tempHand.getCards().get(0).getColor();
+                            boolean sameColor = tempHand.getCards().stream()
+                                    .allMatch(card -> card.getColor().equals(firstColor));
+                            if (sameColor) {
+                                bestIndicesToRemove.clear();
+                                for (int m = 0; m < n; m++) {
+                                    if (m != i && m != j && m != k) {
+                                        bestIndicesToRemove.add(m);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return bestIndicesToRemove;
     }
 
     private void dealToThreeCards(Player player) {
