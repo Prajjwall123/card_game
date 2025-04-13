@@ -1,5 +1,5 @@
-0 - prajwal
-0 - prajwal
+0 - player1
+0 - player1
 2 - Computer1
-2 - prajwal
-2 - prajwal
+2 - player1
+2 - player1
