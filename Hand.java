@@ -4,14 +4,18 @@ import java.util.Scanner;
 public class Hand {
     private LinkedList<Card> cards;
     private boolean isComputer;
+    private LinkedList<Card> initialHand;
+    private LinkedList<Card> removedCards;
 
     public Hand(LinkedList<Card> initialCards) {
         this.cards = initialCards;
         this.isComputer = false;
+        this.initialHand = new LinkedList<>(initialCards); // Store the initial hand
+        this.removedCards = new LinkedList<>();
     }
 
     public Hand(LinkedList<Card> initialCards, boolean isComputer) {
-        this.cards = initialCards;
+        this(initialCards);
         this.isComputer = isComputer;
         if (isComputer)
             autoTrimToThree();
@@ -25,7 +29,8 @@ public class Hand {
             System.out.print("Enter the index (1 to " + cards.size() + ") of the card to remove: ");
             int index = scanner.nextInt();
             if (index >= 1 && index <= cards.size()) {
-                cards.remove(index - 1);
+                Card removedCard = cards.remove(index - 1);
+                removedCards.add(removedCard); // Track removed card
             } else {
                 System.out.println("Invalid index. Try again.");
             }
@@ -34,7 +39,8 @@ public class Hand {
 
     private void autoTrimToThree() {
         while (cards.size() > 3) {
-            cards.removeLast();
+            Card removedCard = cards.removeLast();
+            removedCards.add(removedCard); // Track removed card
         }
     }
 
@@ -65,5 +71,13 @@ public class Hand {
 
     public LinkedList<Card> getCards() {
         return cards;
+    }
+
+    public LinkedList<Card> getInitialHand() {
+        return initialHand;
+    }
+
+    public LinkedList<Card> getRemovedCards() {
+        return removedCards;
     }
 }
