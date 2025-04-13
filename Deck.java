@@ -5,6 +5,10 @@ public class Deck {
     private LinkedList<Card> cards;
 
     public Deck() {
+        reset();
+    }
+
+    public void reset() {
         cards = new LinkedList<>();
         String[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
         for (String suit : suits) {
@@ -25,5 +29,9 @@ public class Deck {
             hand.add(cards.removeFirst());
         }
         return hand;
+    }
+
+    public boolean isEmpty() {
+        return cards.isEmpty();
     }
 }

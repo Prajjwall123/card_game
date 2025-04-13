@@ -3,9 +3,18 @@ import java.util.Scanner;
 
 public class Hand {
     private LinkedList<Card> cards;
+    private boolean isComputer;
 
     public Hand(LinkedList<Card> initialCards) {
         this.cards = initialCards;
+        this.isComputer = false;
+    }
+
+    public Hand(LinkedList<Card> initialCards, boolean isComputer) {
+        this.cards = initialCards;
+        this.isComputer = isComputer;
+        if (isComputer)
+            autoTrimToThree();
     }
 
     public void trimToThree() {
@@ -23,6 +32,12 @@ public class Hand {
         }
     }
 
+    private void autoTrimToThree() {
+        while (cards.size() > 3) {
+            cards.removeLast();
+        }
+    }
+
     public int calculateScore() {
         int total = 0;
         for (Card c : cards) {
@@ -31,7 +46,6 @@ public class Hand {
 
         int score = Math.abs(15 - total);
 
-        // Apply bonus
         boolean sameColor = cards.stream().allMatch(c -> c.getColor().equals(cards.get(0).getColor()));
         boolean sameSuit = cards.stream().allMatch(c -> c.getSuit().equals(cards.get(0).getSuit()));
 
@@ -47,5 +61,9 @@ public class Hand {
         for (int i = 0; i < cards.size(); i++) {
             System.out.println((i + 1) + ". " + cards.get(i));
         }
+    }
+
+    public LinkedList<Card> getCards() {
+        return cards;
     }
 }
