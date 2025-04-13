@@ -43,6 +43,20 @@ public class Main {
         Game game = new Game(playerNames, numRounds);
         game.play();
 
+        // Offer replay
+        System.out.print("\nWould you like to view a replay? (yes/no): ");
+        String replayChoice = scanner.nextLine().trim().toLowerCase();
+        if (replayChoice.equals("yes") || replayChoice.equals("y")) {
+            game.displayReplay();
+        }
+
+        // Offer high-score table
+        System.out.print("\nWould you like to view the high-score table? (yes/no): ");
+        String highScoreChoice = scanner.nextLine().trim().toLowerCase();
+        if (highScoreChoice.equals("yes") || highScoreChoice.equals("y")) {
+            game.getHighScoreManager().displayTopScores();
+        }
+
         scanner.close();
     }
 }
