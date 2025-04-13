@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.List;
 
 public class HighScoreManager {
-    private static final String FILE_NAME = "highscores.txt";
+    private static final String FILE_NAME = "highscores.txt"; // high score file
 
     private static class HighScore {
-        String playerName;
-        double averageScore;
+        String playerName; // Players name
+        double averageScore; // Their average score
 
         HighScore(String playerName, double averageScore) {
             this.playerName = playerName;
@@ -21,18 +21,19 @@ public class HighScoreManager {
         }
     }
 
+    // Adds a new score to the file
     public void addScore(String playerName, int totalScore, int numRounds) {
-        double averageScore = (double) totalScore / numRounds;
-        averageScore = Math.round(averageScore * 100.0) / 100.0;
-
+        double averageScore = (double) totalScore / numRounds; // Get average
+        averageScore = Math.round(averageScore * 100.0) / 100.0; // Round it
         List<HighScore> scores = readScores();
         scores.add(new HighScore(playerName, averageScore));
         writeScores(scores);
     }
 
+    // Shows top 5 scores
     public void displayTopScores() {
         List<HighScore> scores = readScores();
-        scores.sort(Comparator.comparingDouble(hs -> hs.averageScore));
+        scores.sort(Comparator.comparingDouble(hs -> hs.averageScore)); // sotring
         List<HighScore> topScores = scores.stream().limit(5).toList();
 
         System.out.println("\n=== High Score Table ===");
@@ -45,6 +46,7 @@ public class HighScoreManager {
         }
     }
 
+    // Reads scores from the file
     private List<HighScore> readScores() {
         List<HighScore> scores = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
