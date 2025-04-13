@@ -48,7 +48,7 @@ public class Hand {
 
         // Add up all card values, handling ace later
         for (Card c : cards) {
-            if (c.getRank().equals("Ace")) {
+            if (c.getvalue().equals("Ace")) {
                 aceCount++;
             }
             total += c.getValue();

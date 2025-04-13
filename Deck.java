@@ -13,12 +13,12 @@ public class Deck {
     public void reset() {
         cards = new LinkedList<>();
         String[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
-        String[] ranks = { "Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King" };
+        String[] values = { "Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King" };
 
         // Add all cards to deck
         for (String suit : suits) {
-            for (String rank : ranks) {
-                cards.add(new Card(suit, rank));
+            for (String value : values) {
+                cards.add(new Card(suit, value));
             }
         }
 
