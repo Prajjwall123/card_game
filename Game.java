@@ -12,7 +12,7 @@ public class Game {
     private final HighScoreManager highScoreManager; // Handles scores
 
     private static class RoundInfo {
-        private final int round; // Round number(ehich round it is)
+        private final int round; // ehich round it is
         private final String playerName; // Player's name
         private final List<Card> startingHand; // Cards at start
         private final List<Integer> cardsRemoved; // Cards removed
