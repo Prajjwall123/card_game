@@ -1,20 +1,20 @@
 public class Card {
-    private final String rank;
-    private final String suit;
+    private final String cardNumber;
+    private final String cardType;
     private final String color;
 
-    public Card(String rank, String suit) {
-        this.rank = rank;
-        this.suit = suit;
-        this.color = (suit.equals("heart") || suit.equals("diamond")) ? "Red" : "Black";
+    public Card(String cardNumber, String cardType) {
+        this.cardNumber = cardNumber;
+        this.cardType = cardType;
+        this.color = (cardType.equals("heart") || cardType.equals("diamond")) ? "Red" : "Black";
     }
 
-    public String getRank() {
-        return rank;
+    public String getcardNumber() {
+        return cardNumber;
     }
 
-    public String getSuit() {
-        return suit;
+    public String getcardType() {
+        return cardType;
     }
 
     public String getColor() {
@@ -22,7 +22,7 @@ public class Card {
     }
 
     public int getValue() {
-        switch (rank) {
+        switch (cardNumber) {
             case "A":
                 return 11;
             case "2":
@@ -47,12 +47,12 @@ public class Card {
             case "K":
                 return 10;
             default:
-                throw new IllegalStateException("Invalid rank: " + rank);
+                throw new IllegalStateException("Invalid cardNumber: " + cardNumber);
         }
     }
 
     @Override
     public String toString() {
-        return rank + suit;
+        return cardNumber + cardType;
     }
 }

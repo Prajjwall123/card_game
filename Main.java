@@ -6,7 +6,6 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Get number of players
         int numPlayers;
         do {
             System.out.print("Enter number of players (1-6): ");
@@ -17,7 +16,6 @@ public class Main {
             }
         } while (numPlayers < 1 || numPlayers > 6);
 
-        // Get player names
         List<String> playerNames = new ArrayList<>();
         for (int i = 1; i <= numPlayers; i++) {
             System.out.print("Enter name for player " + i + ": ");
@@ -28,7 +26,6 @@ public class Main {
             playerNames.add(name);
         }
 
-        // Get number of rounds
         int numRounds;
         do {
             System.out.print("Enter number of rounds (1-5): ");
@@ -39,18 +36,15 @@ public class Main {
             }
         } while (numRounds < 1 || numRounds > 5);
 
-        // Start game
         Game game = new Game(playerNames, numRounds);
         game.play();
 
-        // Offer replay
         System.out.print("\nWould you like to view a replay? (yes/no): ");
         String replayChoice = scanner.nextLine().trim().toLowerCase();
         if (replayChoice.equals("yes") || replayChoice.equals("y")) {
             game.displayReplay();
         }
 
-        // Offer high-score table
         System.out.print("\nWould you like to view the high-score table? (yes/no): ");
         String highScoreChoice = scanner.nextLine().trim().toLowerCase();
         if (highScoreChoice.equals("yes") || highScoreChoice.equals("y")) {

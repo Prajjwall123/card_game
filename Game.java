@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -34,21 +33,22 @@ public class Game {
         public void display() {
             System.out.println("Round " + roundNumber + ", Player: " + player.getName());
             System.out.println("  Initial hand: " + formatHand(initialHand));
-            System.out.println("  Removed cards: " +
-                    (removedIndices.isEmpty() ? "None"
-                            : removedIndices.stream()
-                                    .map(i -> String.valueOf(i + 1))
-                                    .collect(Collectors.joining(" "))));
+            System.out.println("  Removed cards: " + formatIndices(removedIndices));
             System.out.println("  Final hand: " + formatHand(finalHand));
             System.out.println("  Score: " + score);
         }
 
         private String formatHand(List<Card> cards) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < cards.size(); i++) {
-                sb.append(i + 1).append(": ").append(cards.get(i)).append(" ");
-            }
-            return sb.toString().trim();
+            return cards.stream()
+                    .map(card -> (cards.indexOf(card) + 1) + ": " + card)
+                    .collect(Collectors.joining(" "));
+        }
+
+        private String formatIndices(List<Integer> indices) {
+            return indices.isEmpty() ? "None"
+                    : indices.stream()
+                            .map(i -> String.valueOf(i + 1))
+                            .collect(Collectors.joining(" "));
         }
     }
 
@@ -76,23 +76,12 @@ public class Game {
             }
         }
 
-        System.out.println("\n=== Final Scores ===");
-        for (Player player : players) {
-            System.out.println(player.getName() + ": " + player.getTotalScore());
-        }
-
-        for (Player player : players) {
-            highScoreManager.addScore(player.getName(), player.getTotalScore(), numRounds);
-        }
+        displayFinalScores();
+        saveHighScores();
     }
 
     private void playRound(Player player, int roundNumber) {
-        // Clear hand by removing all cards
-        while (player.getHand().size() > 0) {
-            player.getHand().removeCard(0);
-        }
-
-        // Deal 5 cards
+        player.getHand().getCards().clear();
         dealInitialHand(player);
         List<Card> initialHand = new ArrayList<>(player.getHand().getCards());
         System.out.println(player.getName() + "'s hand: " + player.getHand());
@@ -110,35 +99,29 @@ public class Game {
     }
 
     private void dealInitialHand(Player player) {
-        // Ensure hand is empty
-        while (player.getHand().size() > 0) {
-            player.getHand().removeCard(0);
-        }
-        // Deal exactly 5 cards
         for (int i = 0; i < 5; i++) {
             if (deck.size() == 0) {
-                deck.shuffle(); // Reshuffle if deck runs out (rare)
+                deck.shuffle();
             }
             player.getHand().addCard(deck.deal());
         }
     }
 
     private List<Integer> removeCards(Player player) {
-        List<Integer> toRemove;
         if (player.getName().equalsIgnoreCase("Computer")) {
-            toRemove = computeOptimalCardsToRemove(player.getHand());
-            System.out.println(player.getName() + " removes cards: " +
-                    toRemove.stream().map(i -> String.valueOf(i + 1)).collect(Collectors.joining(" ")));
-        } else {
+            return computeOptimalCardsToRemove(player.getHand());
+        }
+
+        List<Integer> toRemove = new ArrayList<>();
+        while (toRemove.size() < 2) {
             System.out.println(
                     player.getName() + ", enter the numbers (1-5) of at least two cards to remove (e.g., 1 3 5): ");
             String input = scanner.nextLine();
-            String[] indices = input.trim().split("\\s+");
 
-            toRemove = new ArrayList<>();
-            for (String s : indices) {
+            toRemove.clear();
+            for (String num : input.trim().split("\\s+")) {
                 try {
-                    int index = Integer.parseInt(s) - 1;
+                    int index = Integer.parseInt(num) - 1;
                     if (index >= 0 && index < player.getHand().size()) {
                         toRemove.add(index);
                     }
@@ -148,11 +131,10 @@ public class Game {
 
             if (toRemove.size() < 2) {
                 System.out.println("You must remove at least two cards. Try again.");
-                return removeCards(player);
             }
         }
 
-        toRemove.sort((a, b) -> b - a);
+        Collections.sort(toRemove, Collections.reverseOrder());
         for (int index : toRemove) {
             player.getHand().removeCard(index);
         }
@@ -161,13 +143,12 @@ public class Game {
 
     private List<Integer> computeOptimalCardsToRemove(Hand hand) {
         List<Card> cards = hand.getCards();
-        int n = cards.size();
-        List<Integer> bestIndicesToRemove = new ArrayList<>();
+        List<Integer> bestIndices = new ArrayList<>();
         int bestScore = Integer.MAX_VALUE;
 
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                for (int k = j + 1; k < n; k++) {
+        for (int i = 0; i < cards.size(); i++) {
+            for (int j = i + 1; j < cards.size(); j++) {
+                for (int k = j + 1; k < cards.size(); k++) {
                     Hand tempHand = new Hand();
                     tempHand.addCard(cards.get(i));
                     tempHand.addCard(cards.get(j));
@@ -176,34 +157,10 @@ public class Game {
                     int score = tempHand.calculateScore();
                     if (score < bestScore) {
                         bestScore = score;
-                        bestIndicesToRemove.clear();
-                        for (int m = 0; m < n; m++) {
+                        bestIndices.clear();
+                        for (int m = 0; m < cards.size(); m++) {
                             if (m != i && m != j && m != k) {
-                                bestIndicesToRemove.add(m);
-                            }
-                        }
-                    } else if (score == bestScore) {
-                        String firstSuit = tempHand.getCards().get(0).getSuit();
-                        boolean sameSuit = tempHand.getCards().stream()
-                                .allMatch(card -> card.getSuit().equals(firstSuit));
-                        if (sameSuit) {
-                            bestIndicesToRemove.clear();
-                            for (int m = 0; m < n; m++) {
-                                if (m != i && m != j && m != k) {
-                                    bestIndicesToRemove.add(m);
-                                }
-                            }
-                        } else {
-                            String firstColor = tempHand.getCards().get(0).getColor();
-                            boolean sameColor = tempHand.getCards().stream()
-                                    .allMatch(card -> card.getColor().equals(firstColor));
-                            if (sameColor) {
-                                bestIndicesToRemove.clear();
-                                for (int m = 0; m < n; m++) {
-                                    if (m != i && m != j && m != k) {
-                                        bestIndicesToRemove.add(m);
-                                    }
-                                }
+                                bestIndices.add(m);
                             }
                         }
                     }
@@ -211,12 +168,25 @@ public class Game {
             }
         }
 
-        return bestIndicesToRemove;
+        return bestIndices;
     }
 
     private void dealToThreeCards(Player player) {
         while (player.getHand().size() < 3 && deck.size() > 0) {
             player.getHand().addCard(deck.deal());
+        }
+    }
+
+    private void displayFinalScores() {
+        System.out.println("\n=== Final Scores ===");
+        for (Player player : players) {
+            System.out.println(player.getName() + ": " + player.getTotalScore());
+        }
+    }
+
+    private void saveHighScores() {
+        for (Player player : players) {
+            highScoreManager.addScore(player.getName(), player.getTotalScore(), numRounds);
         }
     }
 

@@ -23,7 +23,6 @@ public class HighScoreManager {
 
     public void addScore(String playerName, int totalScore, int numRounds) {
         double averageScore = (double) totalScore / numRounds;
-        // Round to 2 decimal places
         averageScore = Math.round(averageScore * 100.0) / 100.0;
 
         List<HighScore> scores = readScores();
@@ -33,9 +32,7 @@ public class HighScoreManager {
 
     public void displayTopScores() {
         List<HighScore> scores = readScores();
-        // Sort ascending (lowest first, as lower is better)
         scores.sort(Comparator.comparingDouble(hs -> hs.averageScore));
-        // Take top 5
         List<HighScore> topScores = scores.stream().limit(5).toList();
 
         System.out.println("\n=== High Score Table ===");
@@ -60,12 +57,10 @@ public class HighScoreManager {
                         String name = parts[1];
                         scores.add(new HighScore(name, score));
                     } catch (NumberFormatException ignored) {
-                        // Skip invalid lines
                     }
                 }
             }
         } catch (FileNotFoundException ignored) {
-            // File doesn't exist yet, return empty list
         } catch (IOException e) {
             System.err.println("Error reading high scores: " + e.getMessage());
         }

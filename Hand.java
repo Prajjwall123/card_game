@@ -31,7 +31,7 @@ public class Hand {
         int aces = 0;
 
         for (Card card : cards) {
-            if (card.getRank().equals("A")) {
+            if (card.getcardNumber().equals("A")) {
                 aces++;
             } else {
                 total += card.getValue();
@@ -63,10 +63,10 @@ public class Hand {
         String firstColor = cards.get(0).getColor();
         boolean sameColor = cards.stream().allMatch(card -> card.getColor().equals(firstColor));
 
-        String firstSuit = cards.get(0).getSuit();
-        boolean sameSuit = cards.stream().allMatch(card -> card.getSuit().equals(firstSuit));
+        String firstcardType = cards.get(0).getcardType();
+        boolean samecardType = cards.stream().allMatch(card -> card.getcardType().equals(firstcardType));
 
-        if (sameSuit) {
+        if (samecardType) {
             return -3;
         } else if (sameColor) {
             return -1;
