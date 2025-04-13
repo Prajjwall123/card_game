@@ -1,2 +1,4 @@
 4.50 prajwal
 4.50 Computer
+3.00 prajwal
+7.50 Computer
