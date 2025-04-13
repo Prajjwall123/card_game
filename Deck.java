@@ -11,11 +11,14 @@ public class Deck {
     public void reset() {
         cards = new LinkedList<>();
         String[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
+        String[] ranks = { "Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King" };
+
         for (String suit : suits) {
-            for (int value = 1; value <= 10; value++) {
-                cards.add(new Card(suit, value));
+            for (String rank : ranks) {
+                cards.add(new Card(suit, rank));
             }
         }
+
         shuffle();
     }
 

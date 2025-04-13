@@ -4,21 +4,18 @@ import java.util.Scanner;
 public class Hand {
     private LinkedList<Card> cards;
     private boolean isComputer;
-    private LinkedList<Card> initialHand;
-    private LinkedList<Card> removedCards;
 
     public Hand(LinkedList<Card> initialCards) {
         this.cards = initialCards;
         this.isComputer = false;
-        this.initialHand = new LinkedList<>(initialCards); // Store the initial hand
-        this.removedCards = new LinkedList<>();
     }
 
     public Hand(LinkedList<Card> initialCards, boolean isComputer) {
-        this(initialCards);
+        this.cards = initialCards;
         this.isComputer = isComputer;
-        if (isComputer)
+        if (isComputer) {
             autoTrimToThree();
+        }
     }
 
     public void trimToThree() {
@@ -29,8 +26,7 @@ public class Hand {
             System.out.print("Enter the index (1 to " + cards.size() + ") of the card to remove: ");
             int index = scanner.nextInt();
             if (index >= 1 && index <= cards.size()) {
-                Card removedCard = cards.remove(index - 1);
-                removedCards.add(removedCard); // Track removed card
+                cards.remove(index - 1);
             } else {
                 System.out.println("Invalid index. Try again.");
             }
@@ -39,15 +35,24 @@ public class Hand {
 
     private void autoTrimToThree() {
         while (cards.size() > 3) {
-            Card removedCard = cards.removeLast();
-            removedCards.add(removedCard); // Track removed card
+            cards.removeLast();
         }
     }
 
     public int calculateScore() {
         int total = 0;
+        int aceCount = 0;
+
         for (Card c : cards) {
+            if (c.getRank().equals("Ace")) {
+                aceCount++;
+            }
             total += c.getValue();
+        }
+
+        while (total > 15 && aceCount > 0) {
+            total -= 10;
+            aceCount--;
         }
 
         int score = Math.abs(15 - total);
@@ -71,13 +76,5 @@ public class Hand {
 
     public LinkedList<Card> getCards() {
         return cards;
-    }
-
-    public LinkedList<Card> getInitialHand() {
-        return initialHand;
-    }
-
-    public LinkedList<Card> getRemovedCards() {
-        return removedCards;
     }
 }

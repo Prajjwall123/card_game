@@ -1,5 +1,5 @@
 0 - prajwal
+0 - prajwal
 2 - Computer1
-3 - prajwal
-4 - Computer1
-4 - sandesh
+2 - prajwal
+2 - prajwal

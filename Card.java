@@ -1,32 +1,39 @@
 public class Card {
-    private String suit;
-    private int value;
-    private String color;
+    private final String suit;
+    private final String rank;
 
-    public Card(String suit, int value) {
+    public Card(String suit, String rank) {
         this.suit = suit;
-        this.value = value;
-        if (suit.equals("Hearts") || suit.equals("Diamonds")) {
-            this.color = "Red";
-        } else {
-            this.color = "Black";
-        }
+        this.rank = rank;
     }
 
     public String getSuit() {
         return suit;
     }
 
-    public int getValue() {
-        return value;
+    public String getRank() {
+        return rank;
     }
 
     public String getColor() {
-        return color;
+        return (suit.equals("Hearts") || suit.equals("Diamonds")) ? "Red" : "Black";
+    }
+
+    public int getValue() {
+        switch (rank) {
+            case "Jack":
+            case "Queen":
+            case "King":
+                return 10;
+            case "Ace":
+                return 11; 
+            default:
+                return Integer.parseInt(rank);
+        }
     }
 
     @Override
     public String toString() {
-        return value + " of " + suit + " (" + color + ")";
+        return rank + " of " + suit;
     }
 }
