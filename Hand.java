@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Hand {
-    private final List<Card> cards;
+    private final List<Card> cards;// list of card objects
 
     public Hand() {
         cards = new ArrayList<>();
@@ -12,6 +12,7 @@ public class Hand {
         cards.add(card);
     }
 
+    // Removes a card by its position
     public void removeCard(int index) {
         if (index >= 0 && index < cards.size()) {
             cards.remove(index);
@@ -26,19 +27,21 @@ public class Hand {
         return cards.size();
     }
 
+    // total value of the hand
     public int calculateValue() {
         int total = 0;
         int aces = 0;
 
         for (Card card : cards) {
             if (card.getcardNumber().equals("A")) {
-                aces++;
+                aces++;// Count aces separately
             } else {
-                total += card.getValue();
+                total += card.getValue();// Add other card values
             }
         }
 
         for (int i = 0; i < aces; i++) {
+            // Aces are 11 if it fits(total value is less than or equal to 15), else 1
             if (total + 11 <= 15 || total + 11 <= 21) {
                 total += 11;
             } else {
@@ -49,12 +52,14 @@ public class Hand {
         return total;
     }
 
+    // Works out the score for the game
     public int calculateScore() {
-        int baseScore = Math.abs(15 - calculateValue());
-        int bonus = calculateBonus();
+        int baseScore = Math.abs(15 - calculateValue());// Score based on how close to 15
+        int bonus = calculateBonus();// Add bonus if there are any
         return Math.max(0, baseScore + bonus);
     }
 
+    // Checks for bonus points
     private int calculateBonus() {
         if (cards.size() < 2) {
             return 0;
@@ -67,13 +72,14 @@ public class Hand {
         boolean samecardType = cards.stream().allMatch(card -> card.getcardType().equals(firstcardType));
 
         if (samecardType) {
-            return -3;
+            return -3;// 3 bonus for same card type(suit)
         } else if (sameColor) {
-            return -1;
+            return -1;// 1 bonus for same color
         }
-        return 0;
+        return 0;// No bonus
     }
 
+    // Shows the hand like "1: Aheart 2: 5spade"
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

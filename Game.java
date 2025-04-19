@@ -4,21 +4,22 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Game {
-    private final List<Player> players;
-    private final Deck deck;
+    private final List<Player> players;// List of player objects
+    private final Deck deck; // The deck of cards
     private final Scanner scanner;
-    private final int numRounds;
-    private final List<RoundInfo> roundsPlayed;
-    private final HighScoreManager highScoreManager;
+    private final int numRounds;// Number of rounds
+    private final List<RoundInfo> roundsPlayed;// Records track of rounds
+    private final HighScoreManager highScoreManager;// Handles scores
 
     private static class RoundInfo {
-        private final int round;
-        private final String playerName;
-        private final List<Card> startingHand;
-        private final List<Integer> cardsRemoved;
-        private final List<Card> endingHand;
-        private final int score;
+        private final int round;// ehich round it is
+        private final String playerName;// Player's name
+        private final List<Card> startingHand;// Cards at start
+        private final List<Integer> cardsRemoved;// Cards removed
+        private final List<Card> endingHand;// Cards at end
+        private final int score;// Round score
 
+        // Shows round details
         RoundInfo(int round, Player player, List<Card> startingHand,
                 List<Integer> cardsRemoved, List<Card> endingHand, int score) {
             this.round = round;
@@ -47,6 +48,7 @@ public class Game {
             System.out.println("  Score: " + score);
         }
 
+        // Makes card list look nice
         private String formatCards(List<Card> cards) {
             StringBuilder result = new StringBuilder();
             for (int i = 0; i < cards.size(); i++) {
@@ -58,6 +60,7 @@ public class Game {
         }
     }
 
+    // Sets up the game
     public Game(List<String> playerNames, int numRounds) {
         if (playerNames.size() > 6) {
             throw new IllegalArgumentException("Maximum 6 players allowed");
@@ -73,6 +76,7 @@ public class Game {
         highScoreManager = new HighScoreManager();
     }
 
+    // Plays all rounds
     public void play() {
         for (int round = 1; round <= numRounds; round++) {
             System.out.println("\n=== Round " + round + " ===");
@@ -81,22 +85,23 @@ public class Game {
                 playOneRound(player, round);
             }
         }
-
+        // Show final scores
         System.out.println("\n=== Final Scores ===");
         for (Player player : players) {
             System.out.println(player.getName() + ": " + player.getTotalScore());
         }
-
+        // Save scores
         for (Player player : players) {
             highScoreManager.addScore(player.getName(), player.getTotalScore(), numRounds);
         }
     }
 
+    // Plays one round for a player
     private void playOneRound(Player player, int roundNumber) {
         while (player.getHand().size() > 0) {
             player.getHand().removeCard(0);
         }
-        dealFiveCards(player);
+        dealFiveCards(player);// Deal 5 cards
         List<Card> startingHand = new ArrayList<>(player.getHand().getCards());
         System.out.println(player.getName() + "'s hand: " + formatHand(player.getHand()));
 
@@ -112,6 +117,7 @@ public class Game {
         roundsPlayed.add(new RoundInfo(roundNumber, player, startingHand, removedCards, endingHand, score));
     }
 
+    // Shows the hand nicely
     private String formatHand(Hand hand) {
         List<Card> cards = hand.getCards();
         StringBuilder result = new StringBuilder();
@@ -123,6 +129,7 @@ public class Game {
         return result.toString();
     }
 
+    // Deals 5 cards to a player
     private void dealFiveCards(Player player) {
         for (int i = 0; i < 5; i++) {
             if (deck.size() == 0) {
@@ -132,10 +139,11 @@ public class Game {
         }
     }
 
+    // Lets player pick which cards cards to remove
     private List<Integer> chooseCardsToRemove(Player player) {
         List<Integer> toRemove;
         if (player.getName().equalsIgnoreCase("Computer")) {
-            toRemove = findBestCardsToRemove(player.getHand());
+            toRemove = findBestCardsToRemove(player.getHand()); // Computer picks
             System.out.print(player.getName() + " removes cards: ");
             for (int i = 0; i < toRemove.size(); i++) {
                 System.out.print((toRemove.get(i) + 1));
@@ -178,6 +186,7 @@ public class Game {
         return toRemove;
     }
 
+    // Computer picks best cards to remove
     private List<Integer> findBestCardsToRemove(Hand hand) {
         List<Card> cards = hand.getCards();
         List<Integer> bestToRemove = new ArrayList<>();
@@ -207,12 +216,14 @@ public class Game {
         return bestToRemove;
     }
 
+    // Deals cards to get 3
     private void dealToThreeCards(Player player) {
         while (player.getHand().size() < 3 && deck.size() > 0) {
             player.getHand().addCard(deck.deal());
         }
     }
 
+    // Shows game replay
     public void displayReplay() {
         System.out.println("\n=== Game Replay ===");
         for (RoundInfo round : roundsPlayed) {
@@ -220,6 +231,7 @@ public class Game {
         }
     }
 
+    // Gets score manager
     public HighScoreManager getHighScoreManager() {
         return highScoreManager;
     }

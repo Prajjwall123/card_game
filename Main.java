@@ -4,11 +4,12 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);// Reads player input
 
+        // aks for number of players
         int numPlayers;
         do {
-            System.out.print("Enter number of players (1-6): ");
+            System.out.print("Enter number of players (1-6): ");// Get number
             try {
                 numPlayers = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
@@ -16,16 +17,18 @@ public class Main {
             }
         } while (numPlayers < 1 || numPlayers > 6);
 
+        // Get player names
         List<String> playerNames = new ArrayList<>();
         for (int i = 1; i <= numPlayers; i++) {
             System.out.print("Enter name for player " + i + ": ");
             String name = scanner.nextLine();
             if (name.trim().isEmpty()) {
-                name = "Player" + i;
+                name = "Player" + i;// if player name is not given, player+number
             }
             playerNames.add(name);
         }
 
+        // number of rounds
         int numRounds;
         do {
             System.out.print("Enter number of rounds (1-5): ");
@@ -42,13 +45,13 @@ public class Main {
         System.out.print("\nWould you like to view a replay? (yes/no): ");
         String replayChoice = scanner.nextLine().trim().toLowerCase();
         if (replayChoice.equals("yes") || replayChoice.equals("y")) {
-            game.displayReplay();
+            game.displayReplay();// Show replay
         }
 
         System.out.print("\nWould you like to view the high-score table? (yes/no): ");
         String highScoreChoice = scanner.nextLine().trim().toLowerCase();
         if (highScoreChoice.equals("yes") || highScoreChoice.equals("y")) {
-            game.getHighScoreManager().displayTopScores();
+            game.getHighScoreManager().displayTopScores();// Show scores
         }
 
         scanner.close();

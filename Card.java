@@ -1,11 +1,13 @@
 public class Card {
     private final String cardNumber;
-    private final String cardType;
-    private final String color;
+    private final String cardType;// like heart or spade
+    private final String color;// either red or black
 
+    // Sets up a new card
     public Card(String cardNumber, String cardType) {
         this.cardNumber = cardNumber;
         this.cardType = cardType;
+        // Hearts or diamonds are red, others are black
         this.color = (cardType.equals("heart") || cardType.equals("diamond")) ? "Red" : "Black";
     }
 
@@ -21,10 +23,11 @@ public class Card {
         return color;
     }
 
+    // Gives the card's value for games
     public int getValue() {
         switch (cardNumber) {
             case "A":
-                return 11;
+                return 11;// Ace is 11, but can also be 1
             case "2":
                 return 2;
             case "3":
@@ -51,6 +54,7 @@ public class Card {
         }
     }
 
+    // Shows the card like "Aheart"
     @Override
     public String toString() {
         return cardNumber + cardType;

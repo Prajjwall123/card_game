@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.List;
 
 public class HighScoreManager {
-    private static final String FILE_NAME = "highscores.txt";
+    private static final String FILE_NAME = "highscores.txt";// high score file
 
     private static class HighScore {
-        String playerName;
-        double averageScore;
+        String playerName;// Players name
+        double averageScore;// Their average score
 
         HighScore(String playerName, double averageScore) {
             this.playerName = playerName;
@@ -21,6 +21,7 @@ public class HighScoreManager {
         }
     }
 
+    // Adds a new score to the file
     public void addScore(String playerName, int totalScore, int numRounds) {
         double averageScore = (double) totalScore / numRounds;
         averageScore = Math.round(averageScore * 100.0) / 100.0;
@@ -30,6 +31,7 @@ public class HighScoreManager {
         writeScores(scores);
     }
 
+    // Shows top 5 scores
     public void displayTopScores() {
         List<HighScore> scores = readScores();
         scores.sort(Comparator.comparingDouble(hs -> hs.averageScore));
@@ -45,6 +47,7 @@ public class HighScoreManager {
         }
     }
 
+    // Reads scores from the file
     private List<HighScore> readScores() {
         List<HighScore> scores = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
